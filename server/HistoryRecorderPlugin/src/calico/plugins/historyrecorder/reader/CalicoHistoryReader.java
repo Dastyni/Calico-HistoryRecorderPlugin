@@ -25,6 +25,7 @@ public class CalicoHistoryReader {
 	
 	public static int counter = 0;
 	public static PrintWriter out;
+	public static StateStore stateStore;
 	
 	public static void main(String[] args)
 	{
@@ -42,20 +43,21 @@ public class CalicoHistoryReader {
 //				}
 
 				@Override
-				public void processCanvasState(CalicoPacket p, long time,
+				public String processCanvasState(CalicoPacket p, long time,
 						String clientName, long cuid) {
 					// For Dastyni: This is how you create an image
 //					BufferedImage bi = new BufferedImage(1200, 900, BufferedImage.TYPE_INT_ARGB);
 //					Graphics2D ig2 = bi.createGraphics();
 //					CCanvasController.canvases.get(cuid).render(ig2);
+					return "";
 				}
 			};
 			
 			if (out == null)
 				text_output_open(System.getProperty(args[0]));
 			
-			File dir = new File("/");
-			
+			File dir = new File(".");
+		
 			File[] files = dir.listFiles(new FilenameFilter() {
 				public boolean accept(File dir, String name) {
 					return (name.endsWith(".chist"));
@@ -77,23 +79,33 @@ public class CalicoHistoryReader {
 
 	}
 	
+	
 	public static void processHistoryEventsFromDisk(String fileLocation, CanvasHistoryEventProcessor processor) throws IOException
 	{
-		File f = new File(fileLocation);
-		FileInputStream fis = new FileInputStream(f);
+
+		System.out.println("At processHistoryEventsFromDisk");
 		
+		stateStore = new StateStore();
+		System.out.println("stateStore created.");
+		File f = new File(fileLocation);
+		System.out.println("Have file: "+f.getName());
+		FileInputStream fis = new FileInputStream(f);
+		System.out.println("Have fileStream 1");
+		
+		System.err.print("Working on file.");
 		while (fis.available() > 0)
 		{
+			System.out.print(".");
 			byte[] sizeArray = new byte[ByteUtils.SIZE_OF_INT];
 			fis.read(sizeArray);
 			int size = ByteUtils.readInt(sizeArray, 0);
 			byte[] nextInput = new byte[size];
 			fis.read(nextInput);
 			handleNextEvent(new CalicoPacket(nextInput), processor);
-			
-//			processor.processCanvasState();
 		}
+		System.out.println("  Done!");
 		
+		new ViewCreator().createPage( stateStore.getList() );		
 		
 	}
 	
@@ -104,21 +116,26 @@ public class CalicoHistoryReader {
 		long time = historyPacket.getLong();
 		String username = historyPacket.getString();
 		long cuid = historyPacket.getLong();
+		String coordString = CCanvasController.canvases.get(cuid).getCoordText();
 		int sizeOfPacket = historyPacket.getInt();
 		byte[] packetAsBytes = historyPacket.getByteArray(sizeOfPacket);
 		CalicoPacket eventPacket = new CalicoPacket (packetAsBytes);
-		
+
 		eventPacket.rewind();
 		int comm = eventPacket.getInt();
-		
+		String imgNameString = "";
 		try
 		{
 			ProcessQueue.receive(comm, null, eventPacket);
-			processor.processCanvasState(eventPacket, time, username, cuid);
+			imgNameString = processor.processCanvasState(eventPacket, time, username, cuid);
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
+		}
+		
+		if(!imgNameString.isEmpty()){
+			stateStore.add(new CalicoCanvasState(time, cuid, coordString, username, imgNameString ));
 		}
 	}
 

@@ -43,6 +43,7 @@ public class HistoryRecorderPlugin extends AbstractCalicoPlugin
 
 	public void onPluginStart()
 	{
+
 		for (int i = 0; i < CalicoServer.args.length; i++)
 		{
 			if (CalicoServer.args[i].compareTo("-processHistoryFiles") == 0)
@@ -51,7 +52,8 @@ public class HistoryRecorderPlugin extends AbstractCalicoPlugin
 				CanvasHistoryEventProcessor processor = getHistoryProcessor();
 				String curDir = System.getProperty("user.dir");
 				File dir = new File(curDir);
-				
+				System.out.println("***************** "+curDir); 				
+				//Grabs all of the files in the user directory
 				File[] files = dir.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String name) {
 						return (name.endsWith(".chist"));
@@ -60,7 +62,10 @@ public class HistoryRecorderPlugin extends AbstractCalicoPlugin
 				
 				System.out.println("Found " + files.length + " files");
 				
+				//Process each of the files.
+				// This will be changed to single file as found at beginning of app.
 				for (File f : files) {
+					System.out.println("Starting file "+f.getName().toString());
 					try {
 						CalicoHistoryReader.processHistoryEventsFromDisk(f.getAbsolutePath(), processor);
 					} catch (IOException e) {
@@ -106,7 +111,7 @@ public class HistoryRecorderPlugin extends AbstractCalicoPlugin
 //			}
 
 			@Override
-			public void processCanvasState(CalicoPacket p, long time,
+			public String processCanvasState(CalicoPacket p, long time,
 					String clientName, long cuid) {
 				if (!(new File("processed_history_logs/")).exists())
 					(new File("processed_history_logs/")).mkdir();
@@ -114,8 +119,9 @@ public class HistoryRecorderPlugin extends AbstractCalicoPlugin
 				p.rewind();
 				int comm = p.getInt();
 				
+				//What you want to process. Should likely be passed to be dynamic. 
 				if (comm != NetworkCommand.PRESENCE_LEAVE_CANVAS)
-					return;
+					return "";
 				
 				// For Dastyni: This is how you create an image
 				System.out.println("Processing history event " + HistoryRecorderPlugin.count++);
@@ -124,13 +130,14 @@ public class HistoryRecorderPlugin extends AbstractCalicoPlugin
 				ig2.setColor(Color.white);
 				ig2.fillRect(0, 0, 1200, 900);
 				CCanvasController.canvases.get(cuid).render(ig2);
+				//Creates the file. We need a way to stuff this into a packet for the ViewCreator.
+				String imgName = "processed_history_logs/" + clientName + "_image_" + HistoryRecorderPlugin.count++;
 				try {
-					CalicoHistoryReader.save_to_disk("processed_history_logs/" + clientName + "_image_" + HistoryRecorderPlugin.count++, bi);
+					CalicoHistoryReader.save_to_disk(imgName, bi);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
-
+				return imgName;
 			}
 
 		};
