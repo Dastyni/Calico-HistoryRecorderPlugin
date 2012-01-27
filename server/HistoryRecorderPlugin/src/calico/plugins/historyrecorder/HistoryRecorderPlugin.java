@@ -52,7 +52,7 @@ public class HistoryRecorderPlugin extends AbstractCalicoPlugin
 				CanvasHistoryEventProcessor processor = getHistoryProcessor();
 				String curDir = System.getProperty("user.dir");
 				File dir = new File(curDir);
-				System.out.println("***************** "+curDir); 				
+
 				//Grabs all of the files in the user directory
 				File[] files = dir.listFiles(new FilenameFilter() {
 					public boolean accept(File dir, String name) {

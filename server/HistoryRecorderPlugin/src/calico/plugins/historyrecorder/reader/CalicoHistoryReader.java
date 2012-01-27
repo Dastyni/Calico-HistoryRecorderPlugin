@@ -83,16 +83,10 @@ public class CalicoHistoryReader {
 	public static void processHistoryEventsFromDisk(String fileLocation, CanvasHistoryEventProcessor processor) throws IOException
 	{
 
-		System.out.println("At processHistoryEventsFromDisk");
-		
 		stateStore = new StateStore();
-		System.out.println("stateStore created.");
 		File f = new File(fileLocation);
-		System.out.println("Have file: "+f.getName());
 		FileInputStream fis = new FileInputStream(f);
-		System.out.println("Have fileStream 1");
-		
-		System.err.print("Working on file.");
+
 		while (fis.available() > 0)
 		{
 			System.out.print(".");
@@ -116,7 +110,8 @@ public class CalicoHistoryReader {
 		long time = historyPacket.getLong();
 		String username = historyPacket.getString();
 		long cuid = historyPacket.getLong();
-		String coordString = CCanvasController.canvases.get(cuid).getCoordText();
+		//String coordString = CCanvasController.canvases.get(cuid).getCoordText();
+		String coordString = (cuid == 0) ? "NA" : CCanvasController.canvases.get(cuid).getCoordText();
 		int sizeOfPacket = historyPacket.getInt();
 		byte[] packetAsBytes = historyPacket.getByteArray(sizeOfPacket);
 		CalicoPacket eventPacket = new CalicoPacket (packetAsBytes);
@@ -135,7 +130,7 @@ public class CalicoHistoryReader {
 		}
 		
 		if(!imgNameString.isEmpty()){
-			stateStore.add(new CalicoCanvasState(time, cuid, coordString, username, imgNameString ));
+			stateStore.add(new CalicoCanvasState(time, cuid, coordString, username, imgNameString+".png" ));
 		}
 	}
 
