@@ -120,8 +120,13 @@ public class HistoryRecorderPlugin extends AbstractCalicoPlugin
 				int comm = p.getInt();
 				
 				//What you want to process. Should likely be passed to be dynamic. 
-				if (comm != NetworkCommand.PRESENCE_LEAVE_CANVAS)
+//				if (comm != NetworkCommand.PRESENCE_LEAVE_CANVAS)
+//					return "";
+				
+				if(clientName.compareTo("David") != 0){
+					System.out.println("clientname = '"+clientName+"'");
 					return "";
+				}
 				
 				// For Dastyni: This is how you create an image
 				System.out.println("Processing history event " + HistoryRecorderPlugin.count++);

@@ -89,7 +89,6 @@ public class CalicoHistoryReader {
 
 		while (fis.available() > 0)
 		{
-			System.out.print(".");
 			byte[] sizeArray = new byte[ByteUtils.SIZE_OF_INT];
 			fis.read(sizeArray);
 			int size = ByteUtils.readInt(sizeArray, 0);
@@ -97,7 +96,6 @@ public class CalicoHistoryReader {
 			fis.read(nextInput);
 			handleNextEvent(new CalicoPacket(nextInput), processor);
 		}
-		System.out.println("  Done!");
 		
 		new ViewCreator().createPage( stateStore.getList() );		
 		
