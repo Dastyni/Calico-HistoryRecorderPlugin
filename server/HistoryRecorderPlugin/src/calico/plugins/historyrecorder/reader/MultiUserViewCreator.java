@@ -15,16 +15,8 @@ import java.util.Map;
  * - Dastyni
  * */
 
-public class ViewCreator {
-	private String vers = "v0.05a";
+public class MultiUserViewCreator extends BaseViewCreator {
 	private int imgSize = 200;
-	
-	private Map<String, List<CalicoCanvasState>> rows = new HashMap<String, List<CalicoCanvasState>>();
-	private List<String> rowOrder = new ArrayList<String>();
-	private List<Long> timestamps = new ArrayList<Long>();
-	
-	private BufferedWriter out;
-	
 	
 	public void createPage(List<CalicoCanvasState> states){
 		// parse the List of states into usable rows
@@ -58,8 +50,6 @@ public class ViewCreator {
 			out.write("$('.resizable').width(ui.value);");
 			out.write("$('.resizable').height(ui.value);");
 			out.write("});});</script>");
-			
-//			out.write("<script>$(\"#myslider\").slider({value: 50,max: 100, min: 0, slide: function(event, ui) { $( \".scalablediv\" ).width(ui.value); $( \".scalablediv\" ).height(ui.value);}});</script>");
 			
 			out.write("<Center><h1>Calico History Viewer</h1></center>\n");
 			out.write("<div id='slider' style='width:20%'><center>Zoom View</center></div>");

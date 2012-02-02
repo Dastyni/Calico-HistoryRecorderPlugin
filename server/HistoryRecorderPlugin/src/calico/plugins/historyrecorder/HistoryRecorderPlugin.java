@@ -27,6 +27,7 @@ import calico.plugins.AbstractCalicoPlugin;
 import calico.plugins.CalicoPlugin;
 import calico.plugins.historyrecorder.reader.CalicoHistoryReader;
 import calico.plugins.historyrecorder.reader.CanvasHistoryEventProcessor;
+import calico.plugins.historyrecorder.reader.SlideshowViewCreator;
 
 public class HistoryRecorderPlugin extends AbstractCalicoPlugin
 	implements CalicoEventListener
@@ -43,6 +44,9 @@ public class HistoryRecorderPlugin extends AbstractCalicoPlugin
 
 	public void onPluginStart()
 	{
+		//TODO testing.
+		//System.out.println("****************** HERE *****************");
+		//if (new SlideshowViewCreator() != null ) return;
 
 		for (int i = 0; i < CalicoServer.args.length; i++)
 		{
@@ -111,8 +115,7 @@ public class HistoryRecorderPlugin extends AbstractCalicoPlugin
 //			}
 
 			@Override
-			public String processCanvasState(CalicoPacket p, long time,
-					String clientName, long cuid) {
+			public String processCanvasState(CalicoPacket p, long time, String clientName, long cuid) {
 				if (!(new File("processed_history_logs/")).exists())
 					(new File("processed_history_logs/")).mkdir();
 				

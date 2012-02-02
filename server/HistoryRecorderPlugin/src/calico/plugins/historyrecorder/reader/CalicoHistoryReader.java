@@ -29,6 +29,8 @@ public class CalicoHistoryReader {
 	
 	public static void main(String[] args)
 	{
+		if (new SlideshowViewCreator() != null ) return;
+		
 		try
 		{
 			CanvasHistoryEventProcessor processor = new CanvasHistoryEventProcessor() {
@@ -97,7 +99,8 @@ public class CalicoHistoryReader {
 			handleNextEvent(new CalicoPacket(nextInput), processor);
 		}
 		
-		new ViewCreator().createPage( stateStore.getList() );		
+		//new MultiUserViewCreator().createPage( stateStore.getList() );
+		new SlideshowViewCreator().createPage( stateStore.getList() );
 		
 	}
 	
