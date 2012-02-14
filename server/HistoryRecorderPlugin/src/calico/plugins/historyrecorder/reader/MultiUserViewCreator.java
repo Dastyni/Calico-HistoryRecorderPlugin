@@ -1,13 +1,10 @@
 package calico.plugins.historyrecorder.reader;
 import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.sql.Time;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /* Adapted/hackafied for single user for new version of recorder 
  * 1/25/2012

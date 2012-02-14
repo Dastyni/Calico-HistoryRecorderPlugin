@@ -1,8 +1,4 @@
 package calico.plugins.historyrecorder.reader;
-//Change for text commit
-import java.awt.Graphics2D;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,9 +8,6 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.List;
-
 import calico.ProcessQueue;
 import calico.controllers.CCanvasController;
 import calico.networking.netstuff.ByteUtils;
@@ -111,7 +104,6 @@ public class CalicoHistoryReader {
 		long time = historyPacket.getLong();
 		String username = historyPacket.getString();
 		long cuid = historyPacket.getLong();
-		//String coordString = CCanvasController.canvases.get(cuid).getCoordText();
 		String coordString = (cuid == 0) ? "NA" : CCanvasController.canvases.get(cuid).getCoordText();
 		int sizeOfPacket = historyPacket.getInt();
 		byte[] packetAsBytes = historyPacket.getByteArray(sizeOfPacket);
@@ -131,7 +123,17 @@ public class CalicoHistoryReader {
 		}
 		
 		if(!imgNameString.isEmpty()){
-			stateStore.add(new CalicoCanvasState(time, cuid, coordString, username, imgNameString+".png" ));
+			CalicoCanvasState newState =  new CalicoCanvasState(time, cuid, coordString, username, imgNameString+".png" );
+			stateStore.add(newState);
+			Database db = new Database();
+			db.connect();  // Connection is failing.
+			System.out.println("testing");
+			db.test();
+//			System.out.println("Adding to DB");
+//			db.add(newState);
+//			System.out.println("Added");
+			db.disconnect();
+			
 		}
 	}
 

@@ -9,7 +9,6 @@
 
 package calico.plugins.historyrecorder.reader;
 
-import java.awt.print.Printable;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.DataInputStream;
@@ -19,7 +18,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 public class SlideshowViewCreator extends BaseViewCreator{
-	private int imgSize = 200;
+	//private int imgSize = 200;
 	
 	public SlideshowViewCreator(){
 		createPage(null);

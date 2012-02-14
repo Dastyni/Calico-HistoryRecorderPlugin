@@ -9,14 +9,11 @@ import java.io.FilenameFilter;
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 
-import calico.COptions;
 import calico.CalicoServer;
 import calico.clients.Client;
 import calico.clients.ClientManager;
-import calico.components.CCanvas;
 import calico.controllers.CCanvasController;
 import calico.events.CalicoEventHandler;
 import calico.events.CalicoEventListener;
@@ -24,10 +21,8 @@ import calico.networking.netstuff.ByteUtils;
 import calico.networking.netstuff.CalicoPacket;
 import calico.networking.netstuff.NetworkCommand;
 import calico.plugins.AbstractCalicoPlugin;
-import calico.plugins.CalicoPlugin;
 import calico.plugins.historyrecorder.reader.CalicoHistoryReader;
 import calico.plugins.historyrecorder.reader.CanvasHistoryEventProcessor;
-import calico.plugins.historyrecorder.reader.SlideshowViewCreator;
 
 public class HistoryRecorderPlugin extends AbstractCalicoPlugin
 	implements CalicoEventListener
@@ -120,16 +115,18 @@ public class HistoryRecorderPlugin extends AbstractCalicoPlugin
 					(new File("processed_history_logs/")).mkdir();
 				
 				p.rewind();
-				int comm = p.getInt();
+				//int comm = p.getInt();
 				
-				//What you want to process. Should likely be passed to be dynamic. 
+				//TODO used processor
+				//What you want to process. Should likely be passed to be dynamic.
+				
 //				if (comm != NetworkCommand.PRESENCE_LEAVE_CANVAS)
 //					return "";
 				
-				if(clientName.compareTo("David") != 0){
-					System.out.println("clientname = '"+clientName+"'");
-					return "";
-				}
+//				if(clientName.compareTo("David") != 0){
+//					System.out.println("clientname = '"+clientName+"'");
+//					return "";
+//				}
 				
 				// For Dastyni: This is how you create an image
 				System.out.println("Processing history event " + HistoryRecorderPlugin.count++);
