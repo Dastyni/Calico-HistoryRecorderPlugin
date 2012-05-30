@@ -18,14 +18,10 @@ import java.io.InputStreamReader;
 import java.util.List;
 
 public class SlideshowViewCreator extends BaseViewCreator{
-	//private int imgSize = 200;
 	
 	public SlideshowViewCreator(){
 		createPage(null);
 	}
-	
-	
-	//imageArray[ImageNum++] = new imageItem(image_dir + "NickM_image_18.png");
 
 	public void createPage(List<CalicoCanvasState> states){
 		System.out.println("In createPage");
@@ -44,7 +40,7 @@ public class SlideshowViewCreator extends BaseViewCreator{
 			  while ((strLine = br.readLine()) != null)   {
 				  if(strLine.compareTo("[ARRAY_FILE_INSERT]") == 0){
 					  for (CalicoCanvasState calicoCanvasState : states) {
-						  out.write("imageArray[ImageNum++] = new imageItem(image_dir + \""+calicoCanvasState.imgName+"\");");
+						  out.write("imageArray[ImageNum++] = new imageItem(image_dir + \""+calicoCanvasState.imgName+"\");\n");
 					  }
 				  } else {
 					  out.write(strLine+"\n");

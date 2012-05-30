@@ -26,16 +26,16 @@ public class CalicoCanvasState {
 	byte[] state;
 	String imgName;
 	int posInTimeline;
+	String fileName;
 	
-	public CalicoCanvasState(long t, long u, String coord, String us, String iName)
+	public CalicoCanvasState(long t, long u, String coord, String us, String iName, String fileName)
 	{
 		this.time = t;
 		this.canvasUUID = u;
 		this.gridCoordText = coord;
 		this.user = us;
 		this.imgName = iName;
-		//this.img = i;
-		//this.state = s;
+		this.fileName = fileName;
 	}
 
 }

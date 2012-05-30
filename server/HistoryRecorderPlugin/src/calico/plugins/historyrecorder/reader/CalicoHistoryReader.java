@@ -12,6 +12,7 @@ import calico.ProcessQueue;
 import calico.controllers.CCanvasController;
 import calico.networking.netstuff.ByteUtils;
 import calico.networking.netstuff.CalicoPacket;
+import calico.plugins.historyrecorder.*;
 
 
 public class CalicoHistoryReader {
@@ -19,6 +20,8 @@ public class CalicoHistoryReader {
 	public static int counter = 0;
 	public static PrintWriter out;
 	public static StateStore stateStore;
+	
+	private static Database db;
 	
 	public static void main(String[] args)
 	{
@@ -81,6 +84,8 @@ public class CalicoHistoryReader {
 		stateStore = new StateStore();
 		File f = new File(fileLocation);
 		FileInputStream fis = new FileInputStream(f);
+		db = new Database();
+		db.connect(); 
 
 		while (fis.available() > 0)
 		{
@@ -89,15 +94,17 @@ public class CalicoHistoryReader {
 			int size = ByteUtils.readInt(sizeArray, 0);
 			byte[] nextInput = new byte[size];
 			fis.read(nextInput);
-			handleNextEvent(new CalicoPacket(nextInput), processor);
+			handleNextEvent(new CalicoPacket(nextInput), processor, f.getName());
 		}
 		
+		//Create view pages here.
 		//new MultiUserViewCreator().createPage( stateStore.getList() );
-		new SlideshowViewCreator().createPage( stateStore.getList() );
+		//new SlideshowViewCreator().createPage( stateStore.getList() );
+		db.disconnect();
 		
 	}
 	
-	public static void handleNextEvent(CalicoPacket historyPacket, CanvasHistoryEventProcessor processor)
+	public static void handleNextEvent(CalicoPacket historyPacket, CanvasHistoryEventProcessor processor, String fileName)
 	{
 		historyPacket.rewind();
 		int histComm = historyPacket.getInt();
@@ -122,17 +129,15 @@ public class CalicoHistoryReader {
 			e.printStackTrace();
 		}
 		
+		//Store it in the DB
 		if(!imgNameString.isEmpty()){
-			CalicoCanvasState newState =  new CalicoCanvasState(time, cuid, coordString, username, imgNameString+".png" );
+			CalicoCanvasState newState =  new CalicoCanvasState(time, cuid, coordString, username, imgNameString+".png", fileName );
 			stateStore.add(newState);
-			Database db = new Database();
-			db.connect();  // Connection is failing.
-			System.out.println("testing");
-			db.test();
-//			System.out.println("Adding to DB");
-//			db.add(newState);
-//			System.out.println("Added");
-			db.disconnect();
+//			Database db = new Database();
+//			db.connect(); 
+			db.add(newState);
+			//System.out.println("Added");
+//			db.disconnect();
 			
 		}
 	}

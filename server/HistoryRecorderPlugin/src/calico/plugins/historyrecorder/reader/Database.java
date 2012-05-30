@@ -1,17 +1,24 @@
 package calico.plugins.historyrecorder.reader;
 
 
+import java.io.File;
+import java.io.FilenameFilter;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+
+import calico.plugins.PluginFinder;
 
 
 
 public class Database {
 	private String dbUrl = "jdbc:mysql://localhost/calicohistory";
 	private Connection connection = null;
-	//private String queryBase = "select * from events ";
+	
+	private long sessionIdleAllowInMinutes = 60;
+	private long prevEventTime = Integer.MIN_VALUE;
+	private int sessionNum = 1;
 	
 	public Database() {}
 	
@@ -22,7 +29,18 @@ public class Database {
 	public void connect(){
 		try {
 			
-			Class.forName("com.mysql.jdbc.Driver");
+			File dir = new File("libs/");
+			if (dir.isFile()) {
+				return;
+			}
+			File[] files = dir.listFiles(new FilenameFilter() {
+				public boolean accept(File dir, String name) {
+					return (name.compareTo("mysql-connector-java-5.1.12-bin.jar") == 0);
+				}
+			});
+			(new PluginFinder()).getClass(files[0], "com.mysql.jdbc.Driver");
+
+			
 			connection = DriverManager.getConnection (dbUrl, "root", "");
 		
 		} catch (ClassNotFoundException e) {
@@ -35,40 +53,45 @@ public class Database {
 					"\t\t\tFAILED CONNECTION\n" +
 					"%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%");
 			e.printStackTrace();
-		}
-	}
-	
-	public void test(){
-		Statement stmt;
-		try {
-			stmt = connection.createStatement();
-			stmt.executeUpdate("Insert into events set client='Zoot', cuid=1234, location='g4', image_name='blort', time='time...'");
-			
-		} catch (SQLException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 	
-
 	public void add(CalicoCanvasState state){
-		System.out.println("Got here");
 		try {
-			String query = "Insert into events set "+
+			String query = "";
+			
+			//Create new Session if needed
+			if(state.time > prevEventTime + (sessionIdleAllowInMinutes * 60000)){
+				query = "Insert into sessions set "+
+						"name='DesignSession "+(sessionNum++)+"', "+
+						"file='"+state.fileName+"', "+
+						"time='"+state.time+"', "+
+						"detail=''";
+				
+				System.out.println("query: "+query);
+				Statement stmt = connection.createStatement();
+				stmt.executeUpdate(query);
+				
+				prevEventTime = state.time;
+			}
+			
+			
+			query = "Insert into events set "+
 					"client='"+state.user+"', "+
 					"cuid='"+state.canvasUUID+"', "+
 					"location='"+state.gridCoordText+"', "+
 					"image_name='"+state.imgName+"', "+
-					"time='"+state.time+"'";
+					"time='"+state.time+"', "+
+					"file='"+state.fileName+"'";
 			
-			query = "Insert into events set client = 'working!'";
-			System.out.println("query: "+query);
-			System.out.println("connection is : "+connection);
+			//System.out.println("query: "+query);
 			Statement stmt = connection.createStatement();
-			System.out.println("Got connection");
 			stmt.executeUpdate(query);
-			System.out.println("done!");
 
+			
+			
 		} catch (SQLException e) {	
 			System.out.println("broke... "+e.toString());
 			e.printStackTrace();}
