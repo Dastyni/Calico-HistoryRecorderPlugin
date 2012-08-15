@@ -131,7 +131,7 @@ public class CalicoHistoryReader {
 		
 		//Store it in the DB
 		if(!imgNameString.isEmpty()){
-			CalicoCanvasState newState =  new CalicoCanvasState(time, cuid, coordString, username, imgNameString+".png", fileName );
+			CalicoCanvasState newState =  new CalicoCanvasState(time, comm, coordString, username, imgNameString+".png", fileName );
 			stateStore.add(newState);
 //			Database db = new Database();
 //			db.connect(); 
