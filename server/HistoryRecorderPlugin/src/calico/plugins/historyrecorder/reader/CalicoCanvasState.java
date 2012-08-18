@@ -1,6 +1,7 @@
 package calico.plugins.historyrecorder.reader;
 
 import java.awt.image.BufferedImage;
+import java.util.Map;
 
 
 /**
@@ -16,7 +17,7 @@ import java.awt.image.BufferedImage;
 public class CalicoCanvasState {
 	
 	long time;
-	long canvasUUID;
+	int command;
 	int x;
 	int y;
 	String gridCoordText;
@@ -27,15 +28,17 @@ public class CalicoCanvasState {
 	String imgName;
 	int posInTimeline;
 	String fileName;
+	Map<String, String> clientLocations;
 	
-	public CalicoCanvasState(long t, long u, String coord, String us, String iName, String fileName)
+	public CalicoCanvasState(long t, Integer cmd, String coord, String us, String iName, String fileName, Map<String, String> clientLocations)
 	{
 		this.time = t;
-		this.canvasUUID = u;
+		this.command = cmd;
 		this.gridCoordText = coord;
 		this.user = us;
 		this.imgName = iName;
 		this.fileName = fileName;
+		this.clientLocations = clientLocations;
 	}
 
 }

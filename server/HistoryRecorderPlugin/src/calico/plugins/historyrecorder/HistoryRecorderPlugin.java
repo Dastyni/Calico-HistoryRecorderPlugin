@@ -1,8 +1,5 @@
 package calico.plugins.historyrecorder;
 
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FilenameFilter;
@@ -14,7 +11,6 @@ import java.util.Date;
 import calico.CalicoServer;
 import calico.clients.Client;
 import calico.clients.ClientManager;
-import calico.controllers.CCanvasController;
 import calico.events.CalicoEventHandler;
 import calico.events.CalicoEventListener;
 import calico.networking.netstuff.ByteUtils;
@@ -98,54 +94,7 @@ public class HistoryRecorderPlugin extends AbstractCalicoPlugin
 	
 	private static CanvasHistoryEventProcessor getHistoryProcessor()
 	{
-		CanvasHistoryEventProcessor processor = new CanvasHistoryEventProcessor() {
-			
-//			@Override
-//			public void processCanvasState() {
-//
-//
-////					text_output_write(state.time + "," + state.canvasUUID);
-//
-//				
-//			}
-
-			@Override
-			public String processCanvasState(CalicoPacket p, long time, String clientName, long cuid) {
-				if (!(new File("processed_history_logs/")).exists())
-					(new File("processed_history_logs/")).mkdir();
-				
-				p.rewind();
-				//int comm = p.getInt();
-				
-				//TODO used processor
-				//What you want to process. Should likely be passed to be dynamic.
-				
-//				if (comm != NetworkCommand.PRESENCE_LEAVE_CANVAS)
-//					return "";
-				
-//				if(clientName.compareTo("David") != 0){
-//					System.out.println("clientname = '"+clientName+"'");
-//					return "";
-//				}
-				
-				// For Dastyni: This is how you create an image
-				System.out.println("Processing history event " + HistoryRecorderPlugin.count++);
-				BufferedImage bi = new BufferedImage(1200, 900, BufferedImage.TYPE_INT_ARGB);
-				Graphics2D ig2 = bi.createGraphics();
-				ig2.setColor(Color.white);
-				ig2.fillRect(0, 0, 1200, 900);
-				CCanvasController.canvases.get(cuid).render(ig2);
-				//Creates the file. We need a way to stuff this into a packet for the ViewCreator.
-				String imgName = "processed_history_logs/" + clientName + "_image_" + HistoryRecorderPlugin.count++;
-				try {
-					CalicoHistoryReader.save_to_disk(imgName, bi);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				return imgName;
-			}
-
-		};
+		CanvasHistoryEventProcessor processor = new CanvasHistoryEventProcessor();		
 		return processor;
 	}
 	

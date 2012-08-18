@@ -4,88 +4,39 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.Map;
+
 import calico.ProcessQueue;
 import calico.controllers.CCanvasController;
 import calico.networking.netstuff.ByteUtils;
 import calico.networking.netstuff.CalicoPacket;
-import calico.plugins.historyrecorder.*;
+import calico.networking.netstuff.NetworkCommand;
 
 
 public class CalicoHistoryReader {
 	
 	public static int counter = 0;
 	public static PrintWriter out;
-	public static StateStore stateStore;
+	//public static StateStore stateStore;
 	
 	private static Database db;
 	
-	public static void main(String[] args)
-	{
-		if (new SlideshowViewCreator() != null ) return;
-		
-		try
-		{
-			CanvasHistoryEventProcessor processor = new CanvasHistoryEventProcessor() {
-				
-//				@Override
-//				public void processCanvasState() {
-//
-//
-////						text_output_write(state.time + "," + state.canvasUUID);
-//
-//					
-//				}
-
-				@Override
-				public String processCanvasState(CalicoPacket p, long time,
-						String clientName, long cuid) {
-					// For Dastyni: This is how you create an image
-//					BufferedImage bi = new BufferedImage(1200, 900, BufferedImage.TYPE_INT_ARGB);
-//					Graphics2D ig2 = bi.createGraphics();
-//					CCanvasController.canvases.get(cuid).render(ig2);
-					return "";
-				}
-			};
-			
-			if (out == null)
-				text_output_open(System.getProperty(args[0]));
-			
-			File dir = new File(".");
-		
-			File[] files = dir.listFiles(new FilenameFilter() {
-				public boolean accept(File dir, String name) {
-					return (name.endsWith(".chist"));
-				}
-			});
-			
-			for (File f : files) {
-				processHistoryEventsFromDisk(f.getAbsolutePath(), processor);
-			}
-			
-			
-			text_output_close();
-		}
-		catch (IOException e)
-		{
-			e.printStackTrace();
-		}
-		
-
-	}
-	
+	private static Map<String, String> clientLocations;
 	
 	public static void processHistoryEventsFromDisk(String fileLocation, CanvasHistoryEventProcessor processor) throws IOException
 	{
 
-		stateStore = new StateStore();
+		//stateStore = new StateStore();
 		File f = new File(fileLocation);
 		FileInputStream fis = new FileInputStream(f);
 		db = new Database();
 		db.connect(); 
+		
+		clientLocations = new HashMap<String, String>();
 
 		while (fis.available() > 0)
 		{
@@ -118,6 +69,18 @@ public class CalicoHistoryReader {
 
 		eventPacket.rewind();
 		int comm = eventPacket.getInt();
+		
+		//Client leaving
+		if(comm == NetworkCommand.PRESENCE_LEAVE_CANVAS && clientLocations.containsKey(username)){
+			clientLocations.remove(username);
+		}
+		//Client joining
+		if(comm == NetworkCommand.PRESENCE_VIEW_CANVAS){
+			//if(coordString != "NA"){
+				clientLocations.put(username, coordString);
+			//}
+		}
+		
 		String imgNameString = "";
 		try
 		{
@@ -131,14 +94,9 @@ public class CalicoHistoryReader {
 		
 		//Store it in the DB
 		if(!imgNameString.isEmpty()){
-			CalicoCanvasState newState =  new CalicoCanvasState(time, comm, coordString, username, imgNameString+".png", fileName );
-			stateStore.add(newState);
-//			Database db = new Database();
-//			db.connect(); 
+			CalicoCanvasState newState =  new CalicoCanvasState(time, comm, coordString, username, imgNameString+".png", fileName, clientLocations );
+			//stateStore.add(newState);
 			db.add(newState);
-			//System.out.println("Added");
-//			db.disconnect();
-			
 		}
 	}
 

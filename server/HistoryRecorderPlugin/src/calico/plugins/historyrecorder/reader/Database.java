@@ -68,7 +68,7 @@ public class Database {
 						"name='DesignSession "+(sessionNum++)+"', "+
 						"file='"+state.fileName+"', "+
 						"time='"+state.time+"', "+
-						"detail=''";
+						"detail=''"+", clientlocations='"+state.clientLocations.toString()+"'";
 				
 				System.out.println("query: "+query);
 				Statement stmt = connection.createStatement();
@@ -80,7 +80,7 @@ public class Database {
 			
 			query = "Insert into events set "+
 					"client='"+state.user+"', "+
-					"cuid='"+state.canvasUUID+"', "+
+					"cuid='"+state.command+"', "+
 					"location='"+state.gridCoordText+"', "+
 					"image_name='"+state.imgName+"', "+
 					"time='"+state.time+"', "+
