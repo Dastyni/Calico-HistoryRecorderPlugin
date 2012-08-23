@@ -30,7 +30,7 @@ public class CanvasHistoryEventProcessor {
 //			}
 			
 			// For Dastyni: This is how you create an image
-			System.out.println("Processing history event " + HistoryRecorderPlugin.count++);
+			System.out.println("Processing history event " + HistoryRecorderPlugin.count);
 			BufferedImage bi = new BufferedImage(1200, 900, BufferedImage.TYPE_INT_ARGB);
 			Graphics2D ig2 = bi.createGraphics();
 			ig2.setColor(Color.white);
