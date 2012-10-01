@@ -108,7 +108,7 @@ public class Database {
 	}
 	
 	private String timeToDate(long timeStamp){
-		java.util.Date time = new java.util.Date(Long.valueOf(timeStamp)*1000);
+		java.util.Date time = new java.util.Date(timeStamp);
 
 		Format formatter = new SimpleDateFormat("EE, MMM dd KK:mm:ss a");
 		String s = formatter.format(time);

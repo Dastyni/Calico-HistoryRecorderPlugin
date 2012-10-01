@@ -5,6 +5,8 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 
 import calico.controllers.CCanvasController;
 import calico.networking.netstuff.CalicoPacket;
@@ -19,15 +21,6 @@ public class CanvasHistoryEventProcessor {
 				(new File("processed_history_logs/")).mkdir();
 			
 			p.rewind();
-			//int comm = p.getInt();
-			
-//			if (comm != NetworkCommand.PRESENCE_LEAVE_CANVAS)
-//				return "";
-			
-//			if(clientName.compareTo("David") != 0){
-//				System.out.println("clientname = '"+clientName+"'");
-//				return "";
-//			}
 			
 			// For Dastyni: This is how you create an image
 			System.out.println("Processing history event " + HistoryRecorderPlugin.count);
@@ -37,7 +30,7 @@ public class CanvasHistoryEventProcessor {
 			ig2.fillRect(0, 0, 1200, 900);
 			CCanvasController.canvases.get(cuid).render(ig2);
 
-			String imgName = "processed_history_logs/" + clientName + "_image_" + HistoryRecorderPlugin.count++;
+			String imgName = "processed_history_logs/" + timeToDate(time) + "_"+ clientName + "_image_" + HistoryRecorderPlugin.count++;
 			try {
 				CalicoHistoryReader.save_to_disk(imgName, bi);
 			} catch (IOException e) {
@@ -45,4 +38,13 @@ public class CanvasHistoryEventProcessor {
 			}
 			return imgName;
 		}
+	
+	private String timeToDate(long timeStamp){
+		java.util.Date time = new java.util.Date(timeStamp);
+
+		Format formatter = new SimpleDateFormat("yyyy.M.d_HH.mm.ss");
+		String s = formatter.format(time);
+		
+		return s;
+	}
 }
