@@ -7,6 +7,8 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.Format;
+import java.text.SimpleDateFormat;
 
 import calico.plugins.PluginFinder;
 
@@ -65,7 +67,7 @@ public class Database {
 			//Create new Session if needed
 			if(state.time > prevEventTime + (sessionIdleAllowInMinutes * 60000)){
 				query = "Insert into sessions set "+
-						"name='DesignSession "+(sessionNum++)+"', "+
+						"name='DesignSession "+(sessionNum++)+"  --  "+timeToDate(state.time)+"', "+
 						"file='"+state.fileName+"', "+
 						"time='"+state.time+"', "+
 						"detail=''"+", clientlocations='"+state.clientLocations.toString()+"'";
@@ -103,5 +105,13 @@ public class Database {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private String timeToDate(long timeStamp){
+		java.util.Date time = new java.util.Date(Long.valueOf(timeStamp)*1000);
+
+		Format formatter = new SimpleDateFormat("EE, MMM dd KK:mm:ss a");
+		String s = formatter.format(time);
+		return s;
 	}
 }
